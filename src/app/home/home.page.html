@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      T-SYS QR Scanner
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <input #fileinput type="file" accept="image/*;capture=camera" hidden
+  (change)="handleFile($event.target.files)">
+
+  <ion-button expand="full" (click)="captureImage()">
+    <ion-icon slot="start" name="camera"></ion-icon>
+    Capture Image
+  </ion-button>
+
+  <ion-button expand="full" (click)="startScan()">
+    <ion-icon slot="start" name="qr-scanner"></ion-icon>
+    Start scan
+  </ion-button>
+
+  <ion-button expand="full" (click)="reset()" color="warning" *ngIf="scanResult">
+    <ion-icon slot="start" name="refresh"></ion-icon>
+    Reset
+  </ion-button>
+
+  <video #video [hidden]="!scanActive" width="100%"></video>
+
+  <canvas #canvas hidden></canvas>
+
+  <ion-button expand="full" (click)="stopScan()" color="danger" *ngIf="scanActive">
+    <ion-icon slot="start" name="close"></ion-icon>
+    Stop scan
+  </ion-button>
+
+  <!-- Esto muestra lo que se scanio -->
+    <ion-card *ngIf="scanResult">
+      <ion-card-header>
+        <ion-card-title>QR Code</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        {{ scanResult }}
+      </ion-card-content>
+    </ion-card>
+    <!-- ///////////////////////////// -->
+</ion-content>
