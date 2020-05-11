@@ -1,5 +1,6 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ToastController, LoadingController, Platform } from '@ionic/angular';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import jsQR from 'jsqr';
 
 @Component({
@@ -7,7 +8,7 @@ import jsQR from 'jsqr';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements AfterViewInit {
   scanActive = false;
   scanResult = null;
   @ViewChild('video', { static: false }) video: ElementRef;
@@ -20,15 +21,19 @@ export class HomePage {
 
   loading: HTMLIonLoadingElement;
 
-  constructor(private toastCtrl: ToastController, private loadingCtrl: LoadingController,
-    private plt: Platform) {
-      const isInStandaloneMode = () =>
+  constructor(
+    private toastCtrl: ToastController, 
+    private loadingCtrl: LoadingController,
+    private plt: Platform, 
+    private barcodeScanner: BarcodeScanner,
+  ) {
+    const isInStandaloneMode = () =>
       'standalone' in window.navigator && window.navigator['standalone'];
     if (this.plt.is('ios') && isInStandaloneMode()) {
       console.log('I am a an iOS PWA!');
       // E.g. hide the scan functionality!
     }
-    }
+  }
 
   ngAfterViewInit() {
     this.videoElement = this.video.nativeElement;
@@ -156,5 +161,17 @@ export class HomePage {
       ]
     });
     toast.present();
+  }
+
+  openCameraForQR() {
+    this.barcodeScanner
+      .scan()
+      .then((barcodeData) => {
+        console.log('Barcode data ->', barcodeData);
+        this.scanResult = barcodeData.text;
+      })
+      .catch((err) => {
+        console.log('Error', err);
+      });
   }
 }
